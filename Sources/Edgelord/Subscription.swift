@@ -2,35 +2,33 @@ import Foundation
 
 
 
-public struct Subscription: QuerySerializable {
+public struct Subscription {
   private let name: String?
-  private let children: [Vertex]
+  private let children: [FieldSerializable]
   
   
-  public init(_ name: String? = nil, children: [Vertex]) {
+  public init(_ name: String? = nil, children: [FieldSerializable]) {
     self.name = name
     self.children = children
   }
   
   
-  public init(_ name: String? = nil, buildChildren: () -> [Vertex]) {
+  public init(_ name: String? = nil, buildChildren: () -> [FieldSerializable]) {
     self.init(name, children: buildChildren())
   }
   
   
-  public func makeQuery(depth: Int = 0) -> String {
-    let indent = SerializationHelper.indentation(for: depth)
-    var buf = indent
-    buf.append("subscription ")
+  public func serialize() -> String {
+    var buf = "subscription "
     if let someName = name {
       buf.append(someName)
       buf.append(" ")
     }
     buf.append("{\n")
 
-    buf.append(SerializationHelper.group(for: children, depth: depth + 1))
+    buf.append(children.map { $0.serializeField(depth: 1) }.joined())
     
-    buf.append(indent + "}\n")
+    buf.append("}\n")
     return buf
   }
 }

@@ -6,7 +6,7 @@ import Edgelord
 class OperationTests: XCTestCase {
   func testQueryOperationSerialization() {
     let subject = Query("MyName", children: [])
-    XCTAssertEqual(subject.makeQuery(), """
+    XCTAssertEqual(subject.serialize(), """
     query MyName {
     }
     
@@ -16,7 +16,7 @@ class OperationTests: XCTestCase {
   
   func testMutationOperationSerialization() {
     let subject = Mutation("Mutating", children: [])
-    XCTAssertEqual(subject.makeQuery(), """
+    XCTAssertEqual(subject.serialize(), """
     mutation Mutating {
     }
     
@@ -26,7 +26,7 @@ class OperationTests: XCTestCase {
 
   func testSubscriptionOperationSerialization() {
     let subject = Subscription("FuzzySub", children: [])
-    XCTAssertEqual(subject.makeQuery(), """
+    XCTAssertEqual(subject.serialize(), """
     subscription FuzzySub {
     }
     
@@ -36,18 +36,18 @@ class OperationTests: XCTestCase {
   
   func testOperationWithChildren() {
     let subject = Query("Mine") {
-      return VertexBuilder.buildBlock(
-        Vertex("name"),
-        Vertex("age"),
-        Vertex("company") {
-          return VertexBuilder.buildBlock(
-            Vertex("name")
+      return FieldBuilder.buildBlock(
+        Field("name"),
+        Field("age"),
+        Field("company") {
+          return FieldBuilder.buildBlock(
+            Field("name")
           )
         }
       )
     }
     
-    XCTAssertEqual(subject.makeQuery(), """
+    XCTAssertEqual(subject.serialize(), """
     query Mine {
       name
       age
