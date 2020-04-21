@@ -36,15 +36,12 @@ class OperationTests: XCTestCase {
   
   func testOperationWithChildren() {
     let subject = Query("Mine") {
-      return FieldBuilder.buildBlock(
-        Field("name"),
-        Field("age"),
-        Field("company") {
-          return FieldBuilder.buildBlock(
-            Field("name")
-          )
-        }
-      )
+      Field("name")
+      Field("age")
+      Field("company")
+      {
+        Field("name")
+      }
     }
     
     XCTAssertEqual(subject.serialize(), """

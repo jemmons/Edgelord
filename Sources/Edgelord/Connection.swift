@@ -2,16 +2,17 @@ import Foundation
 
 
 
+
 public struct Connection: FieldSerializable {
-  private let field: Field
-  private let pageInfo = Field("pageInfo") {
-    FieldBuilder.buildBlock(
-      Field("hasNextPage"),
-      Field("hasPreviousPage"),
-      Field("startCursor"),
+  private enum Const {
+    static let pageInfo = Field("pageInfo") {
+      Field("hasNextPage")
+      Field("hasPreviousPage")
+      Field("startCursor")
       Field("endCursor")
-    )
+    }
   }
+  private let field: Field
 
   
   public enum Direction {
@@ -19,7 +20,7 @@ public struct Connection: FieldSerializable {
   }
   
   
-  public init(_ name: FieldIdentifier, pageSize: Int, page: Direction? = nil, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], children: [FieldSerializable] = []) {
+  public init(_ name: FieldIdentifier, pageSize: Int, page: Direction? = nil, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], children: FieldSerializable = Empty()) {
     let pagedArguments: [ArgumentIdentifier: Scalar]
     switch page {
     case .after(let cursor):
@@ -29,14 +30,15 @@ public struct Connection: FieldSerializable {
     case nil:
       pagedArguments = ["first": pageSize]
     }
-    field = Field(name, alias: alias, arguments: pagedArguments.merging(arguments) { $1 }, children: children + [pageInfo])
+    field = Field(name, alias: alias, arguments: pagedArguments.merging(arguments) { $1 }, children: (children.merge(serializable: Const.pageInfo)))
   }
   
   
-  public init(_ name: FieldIdentifier, pageSize: Int, page: Direction? = nil, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], buildChildren: () -> [FieldSerializable]) {
-    self.init(name, pageSize: pageSize, page: page, alias: alias, arguments: arguments, children: buildChildren())
+  public init(_ name: FieldIdentifier, pageSize: Int, page: Direction? = nil, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], @FieldBuilder builder: () -> FieldSerializable) {
+    #warning("As of Swift 5.2, a `builder` with a single expression will be evaliated directly (as an implicit return closure) rather than sent as an argument to `FieldBuilder.buildBlock(_:)`.")
+    self.init(name, pageSize: pageSize, page: page, alias: alias, arguments: arguments, children: builder())
   }
-  
+
   
   public func serializeField(depth: Int = 0) -> String {
     field.serializeField(depth: depth)

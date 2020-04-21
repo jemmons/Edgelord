@@ -43,10 +43,8 @@ class ConnectionTests: XCTestCase {
   
   func testNesting() {
     let subject = Connection("connection", pageSize: 42) {
-      FieldBuilder.buildBlock(
-        Field("foo"),
-        Connection("bar", pageSize: 64)
-      )
+      Field("foo")
+      Connection("bar", pageSize: 64)
     }.serializeField()
     
     XCTAssertEqual(subject, """
@@ -91,9 +89,7 @@ class ConnectionTests: XCTestCase {
   
   func testNestedPageInfo() {
     let subject = Connection("connection", pageSize: 42) {
-      FieldBuilder.buildBlock(
-        Field("foo")
-      )
+      Field("foo")
     }.serializeField()
     
     XCTAssertEqual(subject, """

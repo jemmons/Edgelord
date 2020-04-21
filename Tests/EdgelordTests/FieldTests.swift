@@ -31,12 +31,24 @@ class FieldTests: XCTestCase {
   }
   
   
-  func testChildrenSerialization() {
+  func testSingleChildSerialization() {
     let subject = Field("hero") {
-      return FieldBuilder.buildBlock(
-        Field("name"),
-        Field("age")
-      )
+      Field("name")
+    }
+    
+    XCTAssertEqual(subject.serializeField(), """
+    hero {
+      name
+    }
+
+    """)
+  }
+
+  
+  func testMultipleChildrenSerialization() {
+    let subject = Field("hero") {
+      Field("name")
+      Field("age")
     }
     
     XCTAssertEqual(subject.serializeField(), """
@@ -49,18 +61,14 @@ class FieldTests: XCTestCase {
   }
   
   
-  func testNestedSerialization() {
+  func testNestedMultipleSerialization() {
     let subject = Field("hero", alias: "MyHero") {
-      FieldBuilder.buildBlock(
-        Field("name"),
-        Field("age"),
-        Field("company") {
-          FieldBuilder.buildBlock(
-            Field("name"),
-            Field("address", arguments: ["location": "primary"])
-          )
-        }
-      )
+      Field("name")
+      Field("age")
+      Field("company") {
+        Field("name")
+        Field("address", arguments: ["location": "primary"])
+      }
     }
     
     XCTAssertEqual(subject.serializeField(), """
@@ -75,4 +83,22 @@ class FieldTests: XCTestCase {
 
     """)
   }  
+  
+  
+  func testNestedSingleSerialization() {
+    let subject = Field("hero", alias: "MyHero") {
+      Field("company") {
+        Field("name")
+      }
+    }
+    
+    XCTAssertEqual(subject.serializeField(), """
+    MyHero: hero {
+      company {
+        name
+      }
+    }
+
+    """)
+  }
 }

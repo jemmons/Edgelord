@@ -6,10 +6,10 @@ public struct Field: FieldSerializable {
   private var name: FieldIdentifier
   private var alias: String?
   private var arguments: [ArgumentIdentifier: Scalar]
-  private var children: [FieldSerializable]
+  private var children: FieldSerializable
   
   
-  public init(_ name: FieldIdentifier, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], children: [FieldSerializable] = []) {
+  public init(_ name: FieldIdentifier, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], children: FieldSerializable = Empty()) {
     self.name = name
     self.alias = alias
     self.arguments = arguments
@@ -17,26 +17,22 @@ public struct Field: FieldSerializable {
   }
   
   
-  public init(_ name: FieldIdentifier, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], buildChildren: () -> [FieldSerializable]) {
-    self.init(name, alias: alias, arguments: arguments, children: buildChildren())
+  public init(_ name: FieldIdentifier, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], @FieldBuilder builder: () -> FieldSerializable) {
+    #warning("As of Swift 5.2, a `builder` with a single expression will be evaliated directly (as an implicit return closure) rather than sent as an argument to `FieldBuilder.buildBlock(_:)`.")
+    self.init(name, alias: alias, arguments: arguments, children: builder())
   }
-  
+    
   
   public func serializeField(depth: Int = 0) -> String {
-    let indent = SerializationHelper.indentation(for: depth)
     var buf = ""
     
     let declaration = Helper.makeDeclaration(name: name, alias: alias, arguments: arguments)
-    
-    switch children.isEmpty {
-    case true:
-      buf.append(indent + declaration + "\n")
+    let indent = SerializationHelper.indentation(for: depth)
 
-    case false:
-      buf.append(indent + declaration + " {\n")
-      buf.append(children.map { $0.serializeField(depth: depth+1) }.joined())
-      buf.append(indent + "}\n")
-    }
+    buf.append(indent)
+    buf.append(declaration)
+    buf.append(children.serializeAsChild(depth: depth))
+    buf.append("\n")
     
     return buf
   }
