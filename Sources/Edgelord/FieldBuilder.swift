@@ -13,7 +13,21 @@ public class FieldBuilder {
 
 
   public static func buildBlock(_ child: FieldSerializable) -> FieldSerializable {
-    #warning("As of Swift 5.2, this is never executed. The given single-expression closure is evaluated as having an implicit return, instead.")
     return child
+  }
+  
+  
+  public static func buildOptional(_ component: FieldSerializable?) -> FieldSerializable {
+    return component ?? Empty()
+  }
+  
+  
+  public static func buildEither(first component: FieldSerializable) -> FieldSerializable {
+    return component
+  }
+    
+    
+  public static func buildEither(second component: FieldSerializable) -> FieldSerializable {
+    return component
   }
 }

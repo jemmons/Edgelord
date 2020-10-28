@@ -14,7 +14,6 @@ public struct Query {
   
   
   public init(_ name: String? = nil, @FieldBuilder builder: () -> FieldSerializable) {
-    #warning("As of Swift 5.2, a `builder` with a single expression will be evaliated directly (as an implicit return closure) rather than sent as an argument to `FieldBuilder.buildBlock(_:)`.")
     self.init(name, children: builder())
   }
   

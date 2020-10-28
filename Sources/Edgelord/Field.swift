@@ -18,7 +18,6 @@ public struct Field: FieldSerializable {
   
   
   public init(_ name: FieldIdentifier, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], @FieldBuilder builder: () -> FieldSerializable) {
-    #warning("As of Swift 5.2, a `builder` with a single expression will be evaliated directly (as an implicit return closure) rather than sent as an argument to `FieldBuilder.buildBlock(_:)`.")
     self.init(name, alias: alias, arguments: arguments, children: builder())
   }
     

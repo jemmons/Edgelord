@@ -35,7 +35,6 @@ public struct Connection: FieldSerializable {
   
   
   public init(_ name: FieldIdentifier, pageSize: Int, page: Direction? = nil, alias: String? = nil, arguments: [ArgumentIdentifier: Scalar] = [:], @FieldBuilder builder: () -> FieldSerializable) {
-    #warning("As of Swift 5.2, a `builder` with a single expression will be evaliated directly (as an implicit return closure) rather than sent as an argument to `FieldBuilder.buildBlock(_:)`.")
     self.init(name, pageSize: pageSize, page: page, alias: alias, arguments: arguments, children: builder())
   }
 
