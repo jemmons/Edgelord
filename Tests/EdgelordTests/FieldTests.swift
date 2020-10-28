@@ -21,11 +21,12 @@ class FieldTests: XCTestCase {
       "string": "string",
       "integer": 42,
       "float": 3.14,
-      "bool": true
+      "bool": true,
+      "object": ["foo": "bar", "limit": 5, "page": 2],
     ])
     
     XCTAssertEqual(subject.serializeField(), """
-    name(bool: true, float: 3.14, integer: 42, string: "string")
+    name(bool: true, float: 3.14, integer: 42, object: {foo: "bar", limit: 5, page: 2}, string: "string")
 
     """)
   }

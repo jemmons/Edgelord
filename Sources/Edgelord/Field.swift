@@ -50,7 +50,10 @@ private enum Helper {
     
     if !arguments.isEmpty {
       buffer.append("(")
-      let args = arguments.keys.sorted().map { return "\($0): \(arguments[$0]!.serialized)" }
+      let args = arguments
+        .keys
+        .sorted() // Makes testing a lot easier
+        .map { return "\($0): \(arguments[$0]!.serialized)" }
       buffer.append(args.joined(separator: ", "))
       buffer.append(")")
     }
